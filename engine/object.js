@@ -25,7 +25,7 @@ function engine_getObjectPosition(name) {
 
 
 function engine_setObjectPosition(name, x, y) {
-	let obj = -1
+    let obj = -1
 
     for (let i = 0; i < engine_objects.length; i++) {
         if (name === engine_objects[i].name) {
@@ -39,7 +39,7 @@ function engine_setObjectPosition(name, x, y) {
 }
 
 function engine_moveObject(name, x, y) {
-	let obj = -1
+    let obj = -1
 
     for (let i = 0; i < engine_objects.length; i++) {
         if (name === engine_objects[i].name) {
@@ -48,34 +48,67 @@ function engine_moveObject(name, x, y) {
         }
     }
 
-    for (let i = 0; i < engine_objects.length; i++) { 
-    	if (engine_objects[obj].x + x == engine_objects[i].x) { 
-    		if (engine_objects[obj].y + y == engine_objects[i].y) { 
-    			return [false, engine_objects[i]] 
-    		}  
-    	} 
+    for (let i = 0; i < engine_objects.length; i++) {
+        if (engine_objects[obj].x + x == engine_objects[i].x) {
+            if (engine_objects[obj].y + y == engine_objects[i].y) {
+                return [false, engine_objects[i]]
+            }
+        }
     }
 
     if (engine_objects[obj] == undefined) {
-    	return [false, { name: "null", symbol: ' ', x: 0, y: 0 }] 
+        return [false, { name: "null", symbol: ' ', x: 0, y: 0 }]
     }
 
-    if (engine_objects[obj].x + x < 0 || engine_objects[obj].y + y < 0) { 
-    	return [false, { name: "null", symbol: ' ', x: 0, y: 0 }] 
+    if (engine_objects[obj].x + x < 0 || engine_objects[obj].y + y < 0) {
+        return [false, { name: "null", symbol: ' ', x: 0, y: 0 }]
     }
 
-    if (engine_objects[obj].x + x > engine_width - 1 || engine_objects[obj].y + y > engine_height - 1) { 
-    	return [false, { name: "null", symbol: ' ', x: 0, y: 0 }] 
+    if (engine_objects[obj].x + x > engine_width - 1 || engine_objects[obj].y + y > engine_height - 1) {
+        return [false, { name: "null", symbol: ' ', x: 0, y: 0 }]
     }
-    
+
     engine_objects[obj].x = engine_objects[obj].x + x
     engine_objects[obj].y = engine_objects[obj].y + y
 
     return [true, { name: "null", symbol: ' ', x: 0, y: 0 }]
 }
 
+function engine_checkMoveObject(name, x, y) {
+    let obj = -1
+
+    for (let i = 0; i < engine_objects.length; i++) {
+        if (name === engine_objects[i].name) {
+            obj = i
+            break
+        }
+    }
+
+    for (let i = 0; i < engine_objects.length; i++) {
+        if (engine_objects[obj].x + x == engine_objects[i].x) {
+            if (engine_objects[obj].y + y == engine_objects[i].y) {
+                return [false, engine_objects[i]]
+            }
+        }
+    }
+
+    if (engine_objects[obj] == undefined) {
+        return [false, { name: "null", symbol: ' ', x: 0, y: 0 }]
+    }
+
+    if (engine_objects[obj].x + x < 0 || engine_objects[obj].y + y < 0) {
+        return [false, { name: "null", symbol: ' ', x: 0, y: 0 }]
+    }
+
+    if (engine_objects[obj].x + x > engine_width - 1 || engine_objects[obj].y + y > engine_height - 1) {
+        return [false, { name: "null", symbol: ' ', x: 0, y: 0 }]
+    }
+
+    return [true, { name: "null", symbol: ' ', x: 0, y: 0 }]
+}
+
 function engine_addObject(name, x, y, symbol) {
-    engine_objects.push({name:name, symbol:symbol, x:x, y:y});
+    engine_objects.push({ name: name, symbol: symbol, x: x, y: y });
 }
 
 

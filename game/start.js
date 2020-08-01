@@ -13,173 +13,165 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.If not, see https://www.gnu.org/licenses/.
 
-function game_start() {
-    engine_addScene({
-        name: "t0", background: [
-            "####################",
-            "#       -->       %#",
-            "#            -->  %#",
-            "#   -->           %#",
-            "####################"
-        ],
-        walls: [
-            "####################",
-            "#   #         ##  %#",
-            "#        #        %#",
-            "##    #     #  #  %#",
-            "####################"
-        ],
-        objects: [{ name: "player", symbol: "F", x: 1, y: 2 }]
+let YDownvelocity = 0
 
-    })
+let YUpvelocity = 0
+
+let recordedKeys = []
+
+let current_i
+
+let currenttiming
+
+let didYouTouchDeThing = false
+
+function game_start() {
+    engine_setScreen(30, 10) 
+    load_add_things()
 
     engine_changeScene("t0")
-    //engine_addUpdate(update)
-    engine_setScreen(20, 5)
-
-    engine_addScene({
-        name: "t1", background: [
-            "########           #",
-            "#    -->           #",
-            "#           -->    #",
-            "#        -->       #",
-            "####################"
-        ],
-        walls: [
-            "#############    ###",
-            "#     #       #  # #",
-            "#         #       # ",
-            "#    #     #  #    %",
-            "####################"
-        ],
-        objects: [{ name: "player", symbol: "F", x: 1, y: 2 }]
-    })
-
-    engine_addScene({
-        name: "t2", background: [
-            "############        ",
-            "#           -->     ",
-            "#    -->     -->   #",
-            "#                  #",
-            "####################"
-        ],
-        walls: [
-            "############        ",
-            "#     #       #  ## ",
-            "#               # #%",
-            "#    #             #",
-            "####################"
-        ],
-        objects: [{ name: "player", symbol: "F", x: 1, y: 2 }],
-    })
-
-
-    additional_addAnimatedScene("end", 0.1, [
-        [
-            "^^^^^^^^^^^^^^^^^^^^",
-            "<                  >",
-            "<      le ende     >",
-            "<                  >",
-            "^^^^^^^^^^^^^^^^^^^^"
-        ],
-        [
-            "^^^^^^^^^^^^^^^^^^^^",
-            "<                  >",
-            "<     le ende      >",
-            "<                  >",
-            "^^^^^^^^^^^^^^^^^^^^"
-        ],
-        [
-            "^^^^^^^^^^^^^^^^^^^^",
-            "<                  >",
-            "<    le ende       >",
-            "<                  >",
-            "^^^^^^^^^^^^^^^^^^^^"
-        ],
-        [
-            "^^^^^^^^^^^^^^^^^^^^",
-            "<                  >",
-            "<     le ende      >",
-            "<                  >",
-            "^^^^^^^^^^^^^^^^^^^^"
-        ],
-        [
-            "^^^^^^^^^^^^^^^^^^^^",
-            "<                  >",
-            "<      le ende     >",
-            "<                  >",
-            "^^^^^^^^^^^^^^^^^^^^"
-        ],
-        [
-            "^^^^^^^^^^^^^^^^^^^^",
-            "<                  >",
-            "<       le ende    >",
-            "<                  >",
-            "^^^^^^^^^^^^^^^^^^^^"
-        ],
-        [
-            "^^^^^^^^^^^^^^^^^^^^",
-            "<                  >",
-            "<        le ende   >",
-            "<                  >",
-            "^^^^^^^^^^^^^^^^^^^^"
-        ],
-        [
-            "^^^^^^^^^^^^^^^^^^^^",
-            "<                  >",
-            "<       le ende    >",
-            "<                  >",
-            "^^^^^^^^^^^^^^^^^^^^"
-        ],
-
-
-    ])
 
 
 
-
-    document.addEventListener('keydown', logKey);
+    eventlistener = document.addEventListener('keydown', logKey);
 }
 
+
 function logKey(e) {
-    let vector = []
+    let special_symbol = null
 
-    if (e.key == "w") {
-        vector = [0, -1]
+    if (e.key == "a") {
+        let save = engine_moveObject("player", -1, 0)
+        if (save[1].symbol === "%") {
+            special_symbol = "%"
+        }
+        if (save[1].symbol === "@") {
+            special_symbol = "@"
+        }
+        if (save[1].symbol === "^") {
+            engine_setObjectPosition("player", 1, 6)
+            recordedKeys = []
+            eventlistener = document.addEventListener('keydown', logKey);
+            return
+        }
+    }
+    if (e.key == "d") {
+        let save = engine_moveObject("player", 1, 0)
+        if (save[1].symbol === "%") {
+            special_symbol = "%"
+            didYouTouchDeThing = true
+        }
+        if (save[1].symbol === "@" && didYouTouchDeThing) {
+            special_symbol = "@"
+        }
+        if (save[1].symbol === "^") {
+            engine_setObjectPosition("player", 1, 6)
+            recordedKeys = []
+            eventlistener = document.addEventListener('keydown', logKey);
+            return
+        }
     }
 
-    else if (e.key == "s") {
-        vector = [0, 1]
+    if (engine_checkMoveObject("player", 0, 1)[0]) {
+        YUpvelocity -= 0.5
+        YDownvelocity += 0.5
     }
 
-    else if (e.key == "a") {
-        vector = [-1, 0]
+
+
+
+    for (let i = 0; i + 1 < YDownvelocity; i++) {
+        let save = engine_moveObject("player", 0, 1)
+        if (save[0] === false) {
+            YDownvelocity = 0
+            if (save[1].symbol === "^") {
+                engine_setObjectPosition("player", 1, 6)
+                recordedKeys = []
+                eventlistener = document.addEventListener('keydown', logKey);
+                return
+            }
+            if (save[1].symbol === "%") {
+                special_symbol = "%"
+            }
+            if (save[1].symbol === "@") {
+                special_symbol = "@"
+            }
+            return
+        }
     }
 
-    else if (e.key == "d") {
-        vector = [1, 0]
+    if (!engine_checkMoveObject("player", 0, 1)[0]) {
+        YUpvelocity = 0
+        YDownvelocity = 0
     }
 
-    else {
+    if (e.key == "w" && engine_checkMoveObject("player", 0, 1)[0] != true) {
+        YUpvelocity = 2 
+    }
+
+    for (let i = 0; i + 1 < YUpvelocity; i++) {
+        let save = engine_moveObject("player", 0, -1)
+        if (save[0] === false) {
+            if (save[1].symbol === "^") {
+                engine_setObjectPosition("player", 1, 6)
+                recordedKeys = []
+                eventlistener = document.addEventListener('keydown', logKey);
+                if (save[1].symbol === "%") {
+                    special_symbol = "%"
+                }
+                if (save[1].symbol === "@") {
+                    special_symbol = "@"
+                }
+                return
+            }
+        }
+
+
+    }
+
+    if (special_symbol == "%") {
+        replay()
+        return
+    }
+    if (special_symbol == "@") {
+        console.log("yep")
+        additional_playAnimationScene("progressed")
         return
     }
 
-    while (engine_moveObject("player", vector[0], vector[1])[0] === true) { }
+    recordedKeys.push(e)
 
-    if (engine_moveObject("player", vector[0], vector[1])[1].symbol == "%") {
-        if (engine_getCurrentScene() == "t0") {
-            engine_changeScene("t1")
-        }
-        else if (engine_getCurrentScene() == "t1") {
-            engine_changeScene("t2")
-        }
-        else if (engine_getCurrentScene() == "t2") {
-            additional_playAnimationScene("end", replay)
-        }
-    }
 }
 
 function replay() {
-    additional_playAnimationScene("end", replay)
+    document.removeEventListener("keydown", logKey)
+
+    current_i = recordedKeys.length
+
+    currenttiming = setInterval(replay_count_down, 100)
+
+}
+
+function replay_count_down() {
+
+    if (current_i < 0) {
+        clearTimeout(currenttiming)
+        document.addEventListener('keydown', logKey);
+        recordedKeys = []
+    }
+
+    if (recordedKeys[current_i] === undefined) { }
+    else if (recordedKeys[current_i].key == "a") {
+        logKey({ key: 'd' })
+    }
+    else if (recordedKeys[current_i].key == "d") {
+        logKey({ key: 'a' })
+    }
+    else {
+        logKey(recordedKeys[current_i])
+    }
+
+
+    current_i--
 
 }
