@@ -58,7 +58,6 @@ function engine_render() {
 
     for (i = 0; engine_objects.length > i; i++) {
         engine_background_symbols[engine_objects[i].y] = engine_background_symbols[engine_objects[i].y].replaceAt(engine_objects[i].x, engine_objects[i].symbol)
-        //engine_background_symbols[engine_objects[i].y][engine_objects[i].x] = engine_objects[i].symbol
     }
 
     for (i = 0; i < engine_background_symbols.length; i++) {
@@ -70,8 +69,5 @@ function engine_render() {
 
 
 String.prototype.replaceAt = function (index, char) {
-    // if (index > str.length - 1) return str;
-    // return str.substr(0, index) + chr + str.substr(index + 1);
-
     return this.substr(0, index) + char + this.substr(index + char.length);
 }

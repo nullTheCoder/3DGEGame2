@@ -14,7 +14,6 @@
 // along with this program.If not, see https://www.gnu.org/licenses/.
 
 let YDownvelocity = 0
-
 let YUpvelocity = 0
 
 let recordedKeys = []
@@ -31,8 +30,6 @@ function game_start() {
 
     engine_changeScene("t0")
 
-
-
     eventlistener = document.addEventListener('keydown', logKey);
 }
 
@@ -42,34 +39,11 @@ function logKey(e) {
 
     if (e.key == "a") {
         let save = engine_moveObject("player", -1, 0)
-        if (save[1].symbol === "%") {
-            special_symbol = "%"
-        }
-        if (save[1].symbol === "@") {
-            special_symbol = "@"
-        }
-        if (save[1].symbol === "^") {
-            engine_setObjectPosition("player", 1, 6)
-            recordedKeys = []
-            eventlistener = document.addEventListener('keydown', logKey);
-            return
-        }
+        special_symbol = handle(save)
     }
     if (e.key == "d") {
         let save = engine_moveObject("player", 1, 0)
-        if (save[1].symbol === "%") {
-            special_symbol = "%"
-            didYouTouchDeThing = true
-        }
-        if (save[1].symbol === "@" && didYouTouchDeThing) {
-            special_symbol = "@"
-        }
-        if (save[1].symbol === "^") {
-            engine_setObjectPosition("player", 1, 6)
-            recordedKeys = []
-            eventlistener = document.addEventListener('keydown', logKey);
-            return
-        }
+        special_symbol = handle(save)
     }
 
     if (engine_checkMoveObject("player", 0, 1)[0]) {
@@ -77,25 +51,11 @@ function logKey(e) {
         YDownvelocity += 0.5
     }
 
-
-
-
     for (let i = 0; i + 1 < YDownvelocity; i++) {
         let save = engine_moveObject("player", 0, 1)
         if (save[0] === false) {
             YDownvelocity = 0
-            if (save[1].symbol === "^") {
-                engine_setObjectPosition("player", 1, 6)
-                recordedKeys = []
-                eventlistener = document.addEventListener('keydown', logKey);
-                return
-            }
-            if (save[1].symbol === "%") {
-                special_symbol = "%"
-            }
-            if (save[1].symbol === "@") {
-                special_symbol = "@"
-            }
+            special_symbol = handle(save)
             return
         }
     }
@@ -112,35 +72,50 @@ function logKey(e) {
     for (let i = 0; i + 1 < YUpvelocity; i++) {
         let save = engine_moveObject("player", 0, -1)
         if (save[0] === false) {
-            if (save[1].symbol === "^") {
-                engine_setObjectPosition("player", 1, 6)
-                recordedKeys = []
-                eventlistener = document.addEventListener('keydown', logKey);
-                if (save[1].symbol === "%") {
-                    special_symbol = "%"
-                }
-                if (save[1].symbol === "@") {
-                    special_symbol = "@"
-                }
-                return
-            }
+            special_symbol = handle(save)
         }
-
-
     }
 
     if (special_symbol == "%") {
+        didYouTouchDeThing = true
         replay()
+
         return
     }
-    if (special_symbol == "@") {
+    if (special_symbol == "@" && didYouTouchDeThing) {
         console.log("yep")
         additional_playAnimationScene("progressed")
+
         return
     }
 
     recordedKeys.push(e)
 
+}
+
+function handle(save) {
+    let ss = null
+
+    if (save[1].symbol === "^") {
+        die()
+    }
+
+    else if (save[1].symbol === "%") {
+        ss = "%"
+    }
+
+    else if (save[1].symbol === "@") {
+        ss = "@"
+    }
+
+    return ss
+}
+
+function die() {
+    engine_setObjectPosition("player", 1, 6)
+    recordedKeys = []
+    eventlistener = document.addEventListener('keydown', logKey);
+    didYouTouchDeThing = false
 }
 
 function replay() {
