@@ -22,19 +22,26 @@ let current_i
 
 let currenttiming
 
-let didYouTouchDeThing = false
+let currentLevel = 0
 
+let replayingMovments = false
+
+//---------------------------------------------------------------------------------------------------
 function game_start() {
     engine_setScreen(30, 10) 
     load_add_things()
 
-    engine_changeScene("t0")
+    engine_changeScene("level0")
 
     eventlistener = document.addEventListener('keydown', logKey);
 }
 
-
+//---------------------------------------------------------------------------------------------------
 function logKey(e) {
+    recordedKeys.push(e)
+
+    console.log(engine_checkMoveObject("player", 0, 1))
+
     let special_symbol = null
 
     if (e.key == "a") {
@@ -49,6 +56,13 @@ function logKey(e) {
     if (engine_checkMoveObject("player", 0, 1)[0]) {
         YUpvelocity -= 0.5
         YDownvelocity += 0.5
+    }
+
+    if (e.key == "r") { //----- reset
+        console.log("reset")
+        
+        die()
+        return
     }
 
     for (let i = 0; i + 1 < YDownvelocity; i++) {
@@ -76,26 +90,31 @@ function logKey(e) {
         }
     }
 
-    if (special_symbol == "%") {
-        didYouTouchDeThing = true
+    if (special_symbol == "%" && !replayingMovments) {
+        recordedKeys.pop()
+        replayingMovments  = true
         replay()
 
         return
     }
-    if (special_symbol == "@" && didYouTouchDeThing) {
+    if (special_symbol == "@" && replayingMovments == true) {
         console.log("yep")
-        additional_playAnimationScene("progressed")
+        additional_playAnimationScene("progressed", levelUp)
 
-        return
+        return true
+
     }
 
-    recordedKeys.push(e)
+    if (engine_checkMoveObject("player", 0, 1)[1].symbol === '^') {
+        die()
+    }
+
 
 }
-
+//---------------------------------------------------------------------------------------------------
 function handle(save) {
     let ss = null
-
+    console.log(save)
     if (save[1].symbol === "^") {
         die()
     }
@@ -110,15 +129,16 @@ function handle(save) {
 
     return ss
 }
-
+//---------------------------------------------------------------------------------------------------
 function die() {
     engine_setObjectPosition("player", 1, 6)
     recordedKeys = []
     eventlistener = document.addEventListener('keydown', logKey);
-    didYouTouchDeThing = false
+    replayingMovments = false
 }
-
+//---------------------------------------------------------------------------------------------------
 function replay() {
+    replayingMovments = true
     document.removeEventListener("keydown", logKey)
 
     current_i = recordedKeys.length
@@ -126,27 +146,41 @@ function replay() {
     currenttiming = setInterval(replay_count_down, 100)
 
 }
-
+//---------------------------------------------------------------------------------------------------
 function replay_count_down() {
 
     if (current_i < 0) {
         clearTimeout(currenttiming)
         document.addEventListener('keydown', logKey);
         recordedKeys = []
+        replayingMovments = false
     }
 
     if (recordedKeys[current_i] === undefined) { }
     else if (recordedKeys[current_i].key == "a") {
-        logKey({ key: 'd' })
+        let lkt = logKey({ key: 'd' })
     }
     else if (recordedKeys[current_i].key == "d") {
-        logKey({ key: 'a' })
+        let lkt = logKey({ key: 'a' })
     }
     else {
-        logKey(recordedKeys[current_i])
+        let lkt = logKey(recordedKeys[current_i])
     }
 
+    if (lkt === true) {
+        clearTimeout(currenttiming)
+        document.addEventListener('keydown', logKey);
+        recordedKeys = []
+        replayingMovments = false
+    }
 
     current_i--
 
+}
+
+//---------------------------------------------------------------------------------------------------
+
+function levelUp() {
+    currentLevel++
+    engine_changeScene("level" + currentLevel)
 }

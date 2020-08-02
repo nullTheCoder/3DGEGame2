@@ -14,7 +14,7 @@
 // along with this program.If not, see https://www.gnu.org/licenses/.
 
 let engine_objects = []
-
+//---------------------------------------------------------------------------------------------------
 function engine_getObjectPosition(name) {
     for (let i = 0; i < engine_objects.length; i++) {
         if (name === engine_objects[i].name) {
@@ -23,8 +23,8 @@ function engine_getObjectPosition(name) {
     }
 }
 
-
-function engine_setObjectPosition(name, x, y) {
+//---------------------------------------------------------------------------------------------------
+function engine_setObjectPosition(name, x, y) { 
     let obj = -1
 
     for (let i = 0; i < engine_objects.length; i++) {
@@ -37,7 +37,7 @@ function engine_setObjectPosition(name, x, y) {
     engine_objects[obj].x = x
     engine_objects[obj].y = y
 }
-
+//---------------------------------------------------------------------------------------------------
 function engine_moveObject(name, x, y) {
     let obj = -1
 
@@ -73,7 +73,7 @@ function engine_moveObject(name, x, y) {
 
     return [true, { name: "null", symbol: ' ', x: 0, y: 0 }]
 }
-
+//---------------------------------------------------------------------------------------------------
 function engine_checkMoveObject(name, x, y) {
     let obj = -1
 
@@ -111,7 +111,7 @@ function engine_addObject(name, x, y, symbol) {
     engine_objects.push({ name: name, symbol: symbol, x: x, y: y });
 }
 
-
+//---------------------------------------------------------------------------------------------------
 function engine_removeObject(name) {
     for (let i = 0; i < engine_objects.length; i++) {
         if (name === engine_objects[i].name) {
