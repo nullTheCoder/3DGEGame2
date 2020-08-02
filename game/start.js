@@ -148,7 +148,7 @@ function replay() {
 }
 //---------------------------------------------------------------------------------------------------
 function replay_count_down() {
-
+    let lkt
     if (current_i < 0) {
         clearTimeout(currenttiming)
         document.addEventListener('keydown', logKey);
@@ -158,13 +158,13 @@ function replay_count_down() {
 
     if (recordedKeys[current_i] === undefined) { }
     else if (recordedKeys[current_i].key == "a") {
-        let lkt = logKey({ key: 'd' })
+        lkt = logKey({ key: 'd' })
     }
     else if (recordedKeys[current_i].key == "d") {
-        let lkt = logKey({ key: 'a' })
+        lkt = logKey({ key: 'a' })
     }
     else {
-        let lkt = logKey(recordedKeys[current_i])
+        lkt = logKey(recordedKeys[current_i])
     }
 
     if (lkt === true) {
