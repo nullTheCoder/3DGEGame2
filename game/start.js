@@ -28,10 +28,6 @@ let replayingMovments = false
 
 //---------------------------------------------------------------------------------------------------
 function game_start() {
-    engine_setScreen(30, 10) 
-    load_add_things()
-
-    engine_changeScene("level0")
 
     eventlistener = document.addEventListener('keydown', logKey);
 }
